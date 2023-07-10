@@ -1,0 +1,16 @@
+# edit ansible hosts list
+sudo vi /etc/ansible/hosts
+
+ansible-playbook playbook.yml -l server1 -u root
+
+ansible-playbook --private-key=~/ssh/key playbook.yml -u root
+
+
+
+
+TODO:
+- [ ] setup shell
+apt install neovim zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+

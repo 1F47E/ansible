@@ -1,0 +1,76 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update apt package manager
+      apt:
+        update_cache: yes
+
+    - name: Install necessary packages
+      apt:
+        name: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common']
+        state: present
+
+    - name: Add Docker's GPG key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      ansible.builtin.apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Update apt package manager after adding Docker's repository
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+    - name: Test Docker with hello-world image
+      command: docker run hello-world
+      register: hello_world_output
+      failed_when: "'Hello from Docker!' not in hello_world_output.stdout"
+
+    - name: Display docker run output
+      debug:
+        msg: "{{ hello_world_output.stdout }}"
+
+
+    - name: Install ncdu
+      apt:
+        name: ncdu
+        state: present
+
+    - name: Install speedtest-cli
+      apt:
+        name: speedtest-cli
+        state: present
+
+    - name: Download Geekbench
+      get_url:
+        #url: https://cdn.geekbench.com/Geekbench-5.4.1-Linux.tar.gz
+        url: https://cdn.geekbench.com/Geekbench-6.1.0-Linux.tar.gz
+        dest: /tmp/Geekbench.tar.gz
+
+    - name: Extract Geekbench
+      unarchive:
+        src: /tmp/Geekbench.tar.gz
+        dest: /tmp
+        remote_src: yes
+
+    - name: Install Geekbench
+      command: "mv /tmp/Geekbench-6.1.0-Linux/ /usr/local/geekbench"
+      args:
+        creates: "/usr/local/geekbench"
+
+    - name: Create Geekbench symlink
+      file:
+        src: /usr/local/geekbench/geekbench6
+        dest: /usr/local/bin/geekbench6
+        state: link
+
+
+
